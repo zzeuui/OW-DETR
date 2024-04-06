@@ -95,9 +95,6 @@ maybe it is /root/dino_resnet50_pretrain.pth
 
 ### 7. prepare on my env (4)
 ### OWOD proposed splits
-<br>
-<p align="center" ><img width='500' src = "https://imgur.com/9bzf3DV.png"></p> 
-<br>
 
 The splits are present inside `data/VOC2007/OWOD/ImageSets/` folder. The remaining dataset can be downloaded using this [link](https://drive.google.com/drive/folders/1S5L-YmIiFMAKTs6nHMorB0Osz5iWI31k?usp=sharing)
 
@@ -110,6 +107,15 @@ OW-DETR/
         	├── JPEGImages
         	├── ImageSets
         	└── Annotations
+```
+
+```
+vim configs/OWOD_split.sh
+change the 10 line from --data_root to your path
+
+cd data/OWOD/VOC2007/ImageSets
+mkdir Main
+mv test.txt Main/
 ```
 
 # OW-DETR: Open-world Detection Transformer (CVPR 2022)
