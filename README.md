@@ -1,3 +1,117 @@
+# Setting
+
+### 1. docker
+```
+$ docker pull nvidia/cuda:11.0.3-cudnn8-devel-ubuntu16.04
+$ docker run -it --gpus all --name container_name -v /path/to/workspace:/root -v /path/to/dataset:/root/dataset nvidia/cuda:11.0.3-cudnn8-devel-ubuntu16.04
+
+# apt-get update
+# apt-get install sudo
+```
+
+### 2. anaconda
+```
+# sudo apt install curl -y
+# curl --output anaconda.sh https://repo.anaconda.com/archive/Anaconda3-2022.10-Linux-x86_64.sh
+# sha256sum anaconda.sh
+# bash anaconda.sh
+# sudo apt-get install vim
+# vim ~/.bashrc
+# source ~/.bashrc
+# conda -V
+
+# exit
+
+$ docker exec -it container_name bash
+```
+
+### 3. envrionment
+```
+conda create -n owdetr python=3.7 pip
+conda activate owdetr
+conda install pytorch==1.8.0 torchvision==0.9.0 torchaudio==0.8.0 cudatoolkit=10.2 -c pytorch
+
+sudo apt-get install git
+git clone https://github.com/akshitac8/OW-DETR.git
+cd OW-DETR
+pip install -r requirements.txt
+```
+
+### 4. prepare on my env (1)
+```
+sudo apt-get install vim
+vim run.sh
+#!/bin/bash
+
+GPUS_PER_NODE=1 ./tools/run_dist_launch.sh 1 configs/OWOD_split.sh
+```
+
+```
+conda install anaconda::pandas
+conda install anaconda::seaborn
+pip install einops
+
+cd
+git clone https://github.com/fundamentalvision/Deformable-DETR.git
+cd Deformable-DETR
+pip install -r requirements.txt
+cd ./models/ops
+sh ./make.sh
+# unit test (should see all checking is True)
+python test.py
+```
+
+I have only one gpu.. i don't need distributed process
+```
+cd
+cd OW-DETR
+vim util/misc.py
+...
+move to 424 line
+add args.distributed = False
+add return
+...
+```
+### 5. prepare on my env (2) - Backbone features
+
+Download the self-supervised backbone from [here](https://dl.fbaipublicfiles.com/dino/dino_resnet50_pretrain/dino_resnet50_pretrain.pth) and add in `models` folder.
+
+### Compiling CUDA operators
+```bash
+cd ./models/ops
+sh ./make.sh
+# unit test (should see all checking is True)
+python test.py
+```
+
+### 6. prepare on my env (3)
+```
+cd OW-DETR
+vim models/backbone.py
+move to 113 line
+change from the model path to my path
+maybe it is /root/dino_resnet50_pretrain.pth
+```
+
+### 7. prepare on my env (4)
+### OWOD proposed splits
+<br>
+<p align="center" ><img width='500' src = "https://imgur.com/9bzf3DV.png"></p> 
+<br>
+
+The splits are present inside `data/VOC2007/OWOD/ImageSets/` folder. The remaining dataset can be downloaded using this [link](https://drive.google.com/drive/folders/1S5L-YmIiFMAKTs6nHMorB0Osz5iWI31k?usp=sharing)
+
+The files should be organized in the following structure:
+```
+OW-DETR/
+└── data/
+    └── VOC2007/
+        └── OWOD/
+        	├── JPEGImages
+        	├── ImageSets
+        	└── Annotations
+```
+
 # OW-DETR: Open-world Detection Transformer (CVPR 2022)
 
 [`Paper`](https://openaccess.thecvf.com/content/CVPR2022/papers/Gupta_OW-DETR_Open-World_Detection_Transformer_CVPR_2022_paper.pdf) [`Video`](https://www.youtube.com/watch?v=saO8RHCpnaY) [`slides`](https://docs.google.com/presentation/d/1I1OyoRbKqvwB_dSLM8ybSXrB74crPX2a9R9yyWvABDc/edit?usp=sharing) [`summary slide`](https://docs.google.com/presentation/d/1zABTrvkaYlqb7u6xWv1JPIHFdsAyRkAggnmj33kuwsE/edit?usp=sharing)
